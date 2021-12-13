@@ -16,22 +16,26 @@ if (isset($_POST['submit'])) {
     if (isset($_POST['firstname']) && strlen($_POST['firstname']) < 45){
         $firstname = $_POST['firstname'];
     } else {
-        $error = 'Invalid name';
+        $errorFirstname = 'Invalid firstname';
     }
     if (isset($_POST['lastname']) && strlen($_POST['lastname']) < 45){
         $lastname = $_POST['lastname'];
     }else {
-        $error = 'Invalid name';
+        $errorLastname = 'Invalid lastname';
     }
 
-    $query = "INSERT INTO `friend` (firstname, lastname) VALUES (:firstname, :lastname)";
-    $statement = $pdo->prepare($query);
+    if (!$errorFirstname && !$errorLastname) {
+        $query = "INSERT INTO `friend` (firstname, lastname) VALUES (:firstname, :lastname)";
+        $statement = $pdo->prepare($query);
 
-    $statement->bindValue(':firstname', $firstname, PDO::PARAM_STR);
-    $statement->bindValue(':lastname', $lastname, PDO::PARAM_STR);
+        $statement->bindValue(':firstname', $firstname);
+        $statement->bindValue(':lastname', $lastname);
 
-    $statement->execute();
-    header("Location: /index.php");
+        $statement->execute();
+        header("Location: /index.php");
+    }
+
+
 }
 
 ?>
@@ -62,8 +66,11 @@ if (isset($_POST['submit'])) {
         <label for="lastname">Last name : </label>
         <input type="text" name="lastname" id="lastname" required><br>
         <?php
-        if (isset($error)) {
-            echo '<p>'.$error.'</p>';
+        if (isset($errorFirstname)) {
+            echo '<p>'.$errorFirstname.'</p>';
+        }
+        if (isset($errorLastname)) {
+            echo '<p>'.$errorLastname.'</p>';
         }
         ?>
         <input type="submit" value="Submit" name="submit">
